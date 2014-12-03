@@ -1,0 +1,239 @@
+//
+//  MainB.cpp
+//
+//  A module to test the Vector2 template class.
+//
+//  This file is required for Part B of Assignment 6.  Do not
+//    modify this file.
+//
+
+// standard #includes
+#include <string>
+#include <iostream>
+#include <iomanip>
+
+// custom #includes
+#include "Vector2.h"
+
+// using declarations
+using namespace std;
+
+// function prototypes
+template <typename ItemType>
+ostream& operator<< (ostream& out, const Vector2<ItemType>& vec);
+
+string operator- (const string& minuend, const string& subtrahend);
+
+template <typename ItemType>
+void testTypeBasic (const ItemType& x1,
+                    const ItemType& y1,
+                    const ItemType& x2,
+                    const ItemType& y2);
+
+template <typename ItemType>
+void testTypeNoNorm (const ItemType& x1,
+                     const ItemType& y1,
+                     const ItemType& x2,
+                     const ItemType& y2);
+
+template <typename ItemType>
+void testTypeInternal (Vector2<ItemType>& v1,
+                       Vector2<ItemType>& v2,
+                       Vector2<ItemType>& v3,
+                       const ItemType& x2,
+                       const ItemType& y2);
+
+
+
+int main ()
+{
+    cout << "Testing int" << endl;
+    cout << "-----------" << endl;
+    testTypeBasic<int>(1, 2, 4, 6);
+    
+    cout << "Testing double" << endl;
+    cout << "--------------" << endl;
+    testTypeBasic<double>(0.1, 0.2, 0.4, 0.6);
+    
+    cout << "Testing string" << endl;
+    cout << "--------------" << endl;
+    testTypeNoNorm<string>("Hello", "World",
+                           "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "aeiou");
+    
+    return 0;
+}
+
+
+
+//
+//  Stream Insertion Operator
+//
+//  Purpose: To allow formatted Vector2s be be conveniantly
+//           inserted into an output stream.  The Vector2 is
+//           formatted as a coordinate vector.
+//  Parameter(s):
+//    <1> out: A reference to the output stream
+//    <2> vec: The Vector2 to insert
+//  Precondition(s): N/A
+//  Returns: out
+//  Side Effect: If out.good() is true, the values of vec are
+//               inserted into out.  If out.good() is false, the
+//               result is undefined.
+//
+
+template <typename ItemType>
+ostream& operator<< (ostream& out, const Vector2<ItemType>& vec)
+{
+    out << "(" << vec.x << ", " << vec.y << ")";
+    return out;
+}
+
+//
+//  Subtraction Operator
+//
+//  Purpose: To make a copy of astring with all occurances of
+//           characters in another string removed from it.
+//  Parameter(s):
+//    <1> minuend: The string to modify
+//    <2> subtrahend: The characters to remove
+//  Precondition(s): N/A
+//  Returns: A copy of minuend with every character that appears
+//           in subtrahend removed.
+//  Side Effect: N/A
+//
+
+string operator- (const string& minuend, const string& subtrahend)
+{
+    string result;
+    result.reserve(minuend.length());
+    
+    for(unsigned int i = 0; i < minuend.size(); i++)
+    {
+        char check_for = minuend[i];
+        if(subtrahend.find_first_of(check_for) == string::npos)
+        {
+            // check_for is not in minuend
+            result += check_for;
+        }
+    }
+    
+    return result;
+}
+
+
+template <typename ItemType>
+void testTypeBasic (const ItemType& x1,
+                    const ItemType& y1,
+                    const ItemType& x2,
+                    const ItemType& y2)
+{
+    // 1. Test constructors
+    
+    Vector2<ItemType> v1;
+    Vector2<ItemType> v2(x1, y1);
+    Vector2<ItemType> v3(v2);
+    
+    testTypeInternal(v1, v2, v3, x2, y2);
+    
+    // 7. Test getNorm
+    
+    cout << "Testing getNorm:" << endl;
+    cout << "  v1.getNorm(): " << v1.getNorm() << endl;
+    cout << "  v2.getNorm(): " << v2.getNorm() << endl;
+    cout << "  v3.getNorm(): " << v3.getNorm() << endl;
+    
+    cout << endl;
+}
+
+template <typename ItemType>
+void testTypeNoNorm (const ItemType& x1,
+                     const ItemType& y1,
+                     const ItemType& x2,
+                     const ItemType& y2)
+{
+    // 1. Test constructors
+    
+    Vector2<ItemType> v1;
+    Vector2<ItemType> v2(x1, y1);
+    Vector2<ItemType> v3(v2);
+    
+    testTypeInternal(v1, v2, v3, x2, y2);
+    
+    cout << endl;
+}
+
+template <typename ItemType>
+void testTypeInternal (Vector2<ItemType>& v1,
+                       Vector2<ItemType>& v2,
+                       Vector2<ItemType>& v3,
+                       const ItemType& x2,
+                       const ItemType& y2)
+{
+    //static const ItemType DEFAULT_VALUE();
+    
+    cout << "After initialization:" << endl;
+    cout << "  v1: " << v1 << endl;
+    cout << "  v2: " << v2 << endl;
+    cout << "  v3: " << v3 << endl;
+    
+    // 2. Test assignment operators
+    
+    v3 = v1;
+    v1 = v2;
+    v1.x = ItemType();
+    
+    cout << "After assignments:" << endl;
+    cout << "  v1: " << v1 << endl;
+    cout << "  v2: " << v2 << endl;
+    cout << "  v3: " << v3 << endl;
+    
+    // 3. Test equality test operator
+    
+    cout << "Testing equality test operator:" << endl;
+    cout << boolalpha;
+    cout << "  v1 == v1: " << (v1 == v1) << endl;
+    cout << "  v1 == v2: " << (v1 == v2) << endl;
+    cout << "  v1 == v3: " << (v1 == v3) << endl;
+    cout << "  v2 == v1: " << (v2 == v1) << endl;
+    cout << "  v2 == v2: " << (v2 == v2) << endl;
+    cout << "  v2 == v3: " << (v2 == v3) << endl;
+    cout << "  v3 == v1: " << (v3 == v1) << endl;
+    cout << "  v3 == v2: " << (v3 == v2) << endl;
+    cout << "  v3 == v3: " << (v3 == v3) << endl;
+    
+    // 4. Test assigning components
+    
+    v1.x = x2;
+    v1.y = y2;
+    
+    cout << "After setting v1:" << endl;
+    cout << "  v1: " << v1 << endl;
+    cout << "  v2: " << v2 << endl;
+    cout << "  v3: " << v3 << endl;
+    
+    // 5. Test addition operator
+    
+    cout << "Testing addition:" << endl;
+    cout << "  v1 + v1: " << (v1 + v1) << endl;
+    cout << "  v1 + v2: " << (v1 + v2) << endl;
+    cout << "  v1 + v3: " << (v1 + v3) << endl;
+    cout << "  v2 + v1: " << (v2 + v1) << endl;
+    cout << "  v2 + v2: " << (v2 + v2) << endl;
+    cout << "  v2 + v3: " << (v2 + v3) << endl;
+    cout << "  v3 + v1: " << (v3 + v1) << endl;
+    cout << "  v3 + v2: " << (v3 + v2) << endl;
+    cout << "  v3 + v3: " << (v3 + v3) << endl;
+    
+    // 6. Test subtraction operator
+    
+    cout << "Testing subtraction:" << endl;
+    cout << "  v1 - v1: " << (v1 - v1) << endl;
+    cout << "  v1 - v2: " << (v1 - v2) << endl;
+    cout << "  v1 - v3: " << (v1 - v3) << endl;
+    cout << "  v2 - v1: " << (v2 - v1) << endl;
+    cout << "  v2 - v2: " << (v2 - v2) << endl;
+    cout << "  v2 - v3: " << (v2 - v3) << endl;
+    cout << "  v3 - v1: " << (v3 - v1) << endl;
+    cout << "  v3 - v2: " << (v3 - v2) << endl;
+    cout << "  v3 - v3: " << (v3 - v3) << endl;
+}
